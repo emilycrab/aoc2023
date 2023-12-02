@@ -8,7 +8,7 @@ Puzzle inputs are placed in the `inputs/` directory, one file per day named as f
 ## Completion List
 
  - [x] Day 1
- - [ ] Day 2
+ - [x] Day 2
  - [ ] Day 3
  - [ ] Day 4
  - [ ] Day 5
