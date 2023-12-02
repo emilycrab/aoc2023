@@ -20,7 +20,7 @@ fn check_digit(line_bytes: &[u8], i: usize) -> Option<u8> {
         return Some(line_bytes[i] - b'0');
     } else {
         for &(word, value) in DIGIT_WORDS {
-            if line_bytes[i..].len() >= word.len() && &line_bytes[i..][..word.len()] == word {
+            if line_bytes[i..].starts_with(word) {
                 return Some(value);
             }
         }
