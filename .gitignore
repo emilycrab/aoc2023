@@ -1,5 +1,5 @@
-
-
-# Added by cargo
-
+# Build artifacts
 /target
+
+# AoC Inputs
+/inputs/day*.txt
