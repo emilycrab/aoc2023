@@ -4,6 +4,7 @@ use harness::PuzzleSolution;
 
 mod day01;
 mod day02;
+mod day03;
 mod harness;
 
 fn print_solution(day_num: usize, solution: impl PuzzleSolution<Output = impl Display>) {
@@ -34,6 +35,7 @@ fn main() {
     let do_day = |day| match day {
         1 => print_solution(day, day01::Day01),
         2 => print_solution(day, day02::Day02),
+        3 => print_solution(day, day03::Day03),
         _ => panic!("invalid day `{day}`"),
     };
 
@@ -41,7 +43,7 @@ fn main() {
         let day = day.parse().unwrap();
         do_day(day);
     } else {
-        for day in 1..3 {
+        for day in 1..4 {
             do_day(day);
         }
     }
