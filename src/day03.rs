@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use crate::harness::PuzzleSolution;
 
@@ -56,8 +56,64 @@ impl PuzzleSolution for Day03 {
         sum
     }
 
-    fn part2(&self, _input: &str) -> Self::Output {
-        0
+    fn part2(&self, input: &str) -> Self::Output {
+        let mut nums: Vec<(i64, i64, i64, u64)> = vec![];
+        let mut gears: HashSet<(i64, i64)> = HashSet::new();
+
+        let mut current_num = 0;
+        let mut current_num_start = None;
+        let mut j = 0;
+        let mut i = 0;
+        for c in input.bytes() {
+            if c.is_ascii_digit() {
+                if current_num_start.is_none() {
+                    current_num_start = Some(i);
+                }
+                let digit = (c - b'0') as u64;
+                current_num = current_num * 10 + digit;
+            } else {
+                if let Some(current_num_start) = current_num_start.take() {
+                    let len = i - current_num_start;
+                    nums.push((j as i64, current_num_start as i64, len as i64, current_num));
+                    current_num = 0;
+                }
+
+                if c == b'*' {
+                    gears.insert((j as i64, i as i64));
+                }
+            }
+
+            if c == b'\n' {
+                j += 1;
+                i = 0;
+            } else {
+                i += 1;
+            }
+        }
+
+        let mut nums_for_gear: HashMap<(i64, i64), Vec<u64>> = HashMap::new();
+        for (row, col, len, value) in nums {
+            for dj in -1..2 {
+                for di in -1..(len + 1) {
+                    if gears.contains(&(row + dj, col + di)) {
+                        nums_for_gear
+                            .entry((row + dj, col + di))
+                            .and_modify(|e| e.push(value))
+                            .or_insert(vec![value]);
+                    }
+                }
+            }
+        }
+
+        let mut sum = 0;
+
+        for nums in nums_for_gear.values() {
+            if nums.len() == 2 {
+                sum += nums[0] * nums[1];
+            }
+        }
+
+        sum
     }
 }
 
@@ -108,6 +164,6 @@ mod tests {
 
     #[test]
     fn part2() {
-        assert_eq!(Day03.part2(TEST_INPUT), 1);
+        assert_eq!(Day03.part2(TEST_INPUT), 467835);
     }
 }
