@@ -6,6 +6,7 @@ mod day01;
 mod day02;
 mod day03;
 mod day04;
+mod day05;
 mod harness;
 
 fn print_solution(day_num: usize, solution: impl PuzzleSolution<Output = impl Display>) {
@@ -38,6 +39,7 @@ fn main() {
         2 => print_solution(day, day02::Day02),
         3 => print_solution(day, day03::Day03),
         4 => print_solution(day, day04::Day04),
+        5 => print_solution(day, day05::Day05),
         _ => panic!("invalid day `{day}`"),
     };
 
@@ -45,7 +47,7 @@ fn main() {
         let day = day.parse().unwrap();
         do_day(day);
     } else {
-        for day in 1..5 {
+        for day in 1..6 {
             do_day(day);
         }
     }
