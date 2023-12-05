@@ -1,7 +1,7 @@
 use std::ops::Range;
 
 use rayon::{
-    iter::{ParallelBridge, ParallelIterator},
+    iter::{IntoParallelIterator, ParallelBridge, ParallelIterator},
     slice::ParallelSlice,
 };
 
@@ -40,6 +40,15 @@ impl CategoryMap {
         }
         source_id
     }
+
+    fn get_source_id(&self, destination_id: u64) -> u64 {
+        for (dst_range, src_range) in &self.mappings {
+            if dst_range.contains(&destination_id) {
+                return src_range.start + (destination_id - dst_range.start);
+            }
+        }
+        destination_id
+    }
 }
 
 struct Almanac {
@@ -67,16 +76,21 @@ impl Almanac {
     }
 
     fn get_lowest_location2(&self) -> u64 {
-        self.seeds
-            .par_chunks_exact(2)
-            .flat_map_iter(|chunk| {
-                let range_start = chunk[0];
-                let range_len = chunk[1];
-                range_start..(range_start + range_len)
-            })
-            .map(|seed| self.get_location(seed))
-            .min()
-            .unwrap()
+        let seed_ranges: Vec<_> = self
+            .seeds
+            .chunks_exact(2)
+            .map(|chunk| chunk[0]..(chunk[0] + chunk[1]))
+            .collect();
+
+        for location in 0..u64::MAX {
+            if seed_ranges
+                .iter()
+                .any(|r| r.contains(&self.get_seed(location)))
+            {
+                return location;
+            }
+        }
+        u64::MAX
     }
 
     fn get_lowest_location1(&self) -> u64 {
@@ -91,6 +105,14 @@ impl Almanac {
         let mut category_id = seed;
         for map in &self.category_maps {
             category_id = map.get_destination_id(category_id);
+        }
+        category_id
+    }
+
+    fn get_seed(&self, location: u64) -> u64 {
+        let mut category_id = location;
+        for map in self.category_maps.iter().rev() {
+            category_id = map.get_source_id(category_id);
         }
         category_id
     }
